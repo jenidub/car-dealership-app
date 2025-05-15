@@ -1,11 +1,14 @@
 package com.pluralsight;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class UserInterface {
     // Declare an instance of DealershipFileManager
     DealershipFileManager fileManager = new DealershipFileManager();
+    ContractFileManager contractFileManager = new ContractFileManager();
 
     //    the UserInterface will create the Dealership object when it is
     //    created. Down the road, there will be a user option to "switch dealerships".
@@ -16,9 +19,15 @@ public class UserInterface {
 
     // Display the home screen with all user options
     public void displayHomeScreen() {
+        // Class instantiation declarations
         Dealership currentDealership = fileManager.getDealership();
+
+        // Class variable declarations
         Scanner scanner = new Scanner(System.in);
         boolean isRunning = true;
+        ArrayList<Vehicle> updatedInventory;
+        long selectedVIN = 0;
+        Vehicle matchedVehicle;
 
         // Welcome Message
         displayWelcome();
@@ -56,7 +65,7 @@ public class UserInterface {
                     break;
                 case "8":
                     System.out.println("\n*** Create a New Vehicle ***");
-                    ArrayList<Vehicle> updatedInventory = currentDealership.addVehicle();
+                    updatedInventory = currentDealership.addVehicle();
                     currentDealership.setInventory(updatedInventory);
                     fileManager.saveDealership(currentDealership);
                     break;
@@ -66,15 +75,41 @@ public class UserInterface {
                     displayVehicleList(currentDealership.getAllVehicles());
 
                     System.out.println("\nWhat is the VIN number of the card you want to remove?    ");
-                    long selectedVIN = Long.parseLong(scanner.nextLine());
-                    for (Vehicle vehicle : currentDealership.getInventory()) {
-                        if (vehicle.getVin() == selectedVIN) {
-                            updatedInventory = currentDealership.removeVehicle(vehicle);
-                            currentDealership.setInventory(updatedInventory);
-                        }
+                    selectedVIN = Long.parseLong(scanner.nextLine());
+                    matchedVehicle = findVINMatch(currentDealership.getInventory(), selectedVIN, scanner);
+                    if (matchedVehicle != null) {
+                        updatedInventory = currentDealership.removeVehicle(matchedVehicle);
+                        currentDealership.setInventory(updatedInventory);
                     }
 
                     fileManager.saveDealership(currentDealership);
+                    break;
+                case "10":
+                    // sale/lease a vehicle
+                    System.out.println("\nWhat is the VIN number of the car?    ");
+                    selectedVIN = Long.parseLong(scanner.nextLine());
+                    matchedVehicle = findVINMatch(currentDealership.getInventory(), selectedVIN, scanner);
+                    if (matchedVehicle != null) {
+                        // prompt for sale or contract
+                        System.out.println("Vehicle found! Is this a sale or a lease contract?    ");
+                        String contractType = scanner.nextLine();
+                        // activate the matching class
+                        switch(contractType.toLowerCase()) {
+                            case "sale":
+                                // getSalesInfo() from user
+                                SalesContract newSalesContract = addSalesTransaction(matchedVehicle, scanner);
+                                contractFileManager.saveContract(newSalesContract);
+                                break;
+                            case "lease":
+                                //get lease info
+                                break;
+                            default:
+                                System.out.println("Invalid selection - please enter again");
+                                break;
+                        }
+                    } else {
+                        System.out.println("There is no matching VIN. Please try again.");
+                    }
                     break;
                 case "99":
                     System.out.println("Thank you for using our program. Goodbye!");
@@ -114,6 +149,7 @@ public class UserInterface {
         System.out.println("[7] List all vehicles in the inventory");
         System.out.println("[8] Add a vehicle");
         System.out.println("[9] Remove a vehicle");
+        System.out.println("[10] Sell / Lease a Vehicle");
         System.out.println("[99] Quit");
     }
 
@@ -130,6 +166,50 @@ public class UserInterface {
                     vehicle.getOdometer(),
                     vehicle.getPrice());
         }
+    }
+
+    public Vehicle findVINMatch(ArrayList<Vehicle> dealershipInventory, long selectedVIN, Scanner scanner) {
+        for (Vehicle vehicle : dealershipInventory) {
+            if (vehicle.getVin() == selectedVIN) {
+                return vehicle;
+            }
+        }
+        return null;
+    }
+
+    public SalesContract addSalesTransaction (Vehicle vehicleInfo, Scanner scanner) {
+        // instantiate SalesContract class
+        SalesContract newSalesContract = new SalesContract(
+                "",
+                "",
+                "",
+                vehicleInfo,
+                0,
+                0,
+                false
+        );
+
+        // get today's date formatted per requirements yyyyMMdd
+        LocalDate date = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        String formattedDate = date.format(formatter);
+        newSalesContract.setDate(formattedDate);
+
+        // get customer's name
+        System.out.println("What is the customer's name?");
+        String customerName = scanner.nextLine();
+        newSalesContract.setCustomerName(customerName);
+
+        // get customer's email
+        System.out.println("What is the customer's email?");
+        String customerEmail = scanner.nextLine();
+        newSalesContract.setCustomerEmail(customerEmail);
+
+        System.out.println("Is this purchase financed? [yes | no]");
+        String financeSelection = scanner.nextLine();
+        newSalesContract.setIsFinanced(financeSelection.equalsIgnoreCase("yes"));
+
+        return newSalesContract;
     }
 
 }

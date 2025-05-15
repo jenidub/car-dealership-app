@@ -95,4 +95,18 @@ public class Vehicle {
         this.price = price;
     }
 
+    public String convertVehicleToString(Vehicle vehicle) {
+        String formattedEntry = "%d|%d|%s|%s|%s|%s|%d|%.2f";
+
+        return String.format(formattedEntry,
+                vehicle.getVin(),
+                vehicle.getYear(),
+                vehicle.getMake(),
+                vehicle.getModel(),
+                vehicle.getVehicleType(),
+                vehicle.getColor(),
+                vehicle.getOdometer(),
+                vehicle.getPrice()
+        );
+    };
 }

@@ -1,7 +1,14 @@
 package com.pluralsight;
 
 public class SalesContract extends Contract {
+    final double SALES_TAX = 0.05;
+    final double RECORDING_FEE = 100;
+    final double PROCESSING_FEE_UNDER_10K = 295;
+    final double PROCESSING_FEE_STANDARD = 495;
+
     private boolean isFinanced;
+    private final double salesTax, recordingFee;
+    private double processingFee;
 
     public SalesContract(
             String date,
@@ -12,6 +19,9 @@ public class SalesContract extends Contract {
             double monthlyPayment,
             boolean isFinanced) {
         super(date, customerName, customerEmail, vehicle, totalPrice, monthlyPayment);
+        this.salesTax = SALES_TAX;
+        this.recordingFee = RECORDING_FEE;
+        this.processingFee = 0;
         this.isFinanced = isFinanced;
     }
 
@@ -23,18 +33,25 @@ public class SalesContract extends Contract {
         this.isFinanced = isFinanced;
     }
 
-    public double getTotalPrice() {
-        final double SALES_TAX = 1.05;
-        final double RECORDING_FEE = 100;
-        final double PROCESSING_FEE_UNDER_10K = 295;
-        final double PROCESSING_FEE_STANDARD = 495;
+    public double getSalesTax() {
+        return salesTax * vehicle.getPrice();
+    }
 
-        double calculatedTotalPrice = (vehicle.getPrice() * SALES_TAX) + RECORDING_FEE;
-        if (vehicle.getPrice() >= 10000) {
-            return calculatedTotalPrice += PROCESSING_FEE_STANDARD;
+    public double getRecordingFee() {
+        return recordingFee;
+    }
+
+    // derived getter based on price
+    public double getProcessingFee() {
+        if (vehicle.getPrice() <= 10000) {
+            return PROCESSING_FEE_UNDER_10K;
         } else {
-            return calculatedTotalPrice += PROCESSING_FEE_UNDER_10K;
+            return PROCESSING_FEE_STANDARD;
         }
+    }
+
+    public double getTotalPrice() {
+        return  vehicle.getPrice() + getSalesTax() + getRecordingFee() + getProcessingFee();
     }
 
     public double getMonthlyPayment() {
@@ -46,18 +63,21 @@ public class SalesContract extends Contract {
         // financed and price >= 10K
         if (isFinanced && vehicle.getPrice() >= 10000) {
             // 4.25% rate , 48 months term
-            setMonthlyPayment((getTotalPrice() * FINANCE_RATE_OVER_10K)/FINANCE_TERM_OVER_10K);
-            return getMonthlyPayment();
+            setMonthlyPayment(getTotalPrice() * FINANCE_RATE_OVER_10K / FINANCE_TERM_OVER_10K);
+            System.out.println("monthly payment over $10K:   $" + monthlyPayment);
         }
         // financed and price < 10K
         else if (isFinanced && vehicle.getPrice() < 10000) {
             // 5.25% rate , 24 months term
-            setMonthlyPayment((getTotalPrice() * FINANCE_RATE_UNDER_10K)/ FINANCE_TERM_UNDER_10K);
-            return getMonthlyPayment();
+            setMonthlyPayment(getTotalPrice() * FINANCE_RATE_UNDER_10K / FINANCE_TERM_UNDER_10K);
+            System.out.println("monthly payment under $10K:   $" + monthlyPayment);
         }
-        // not financed - paid in full
+        // not financed - paid in full - payment is 0
         else {
-            return 0;
+            setMonthlyPayment(0);
         }
+
+        return monthlyPayment;
     }
+
 }

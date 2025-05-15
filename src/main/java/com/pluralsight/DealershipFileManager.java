@@ -57,7 +57,7 @@ public class DealershipFileManager {
             br.write(firstLine);
             br.newLine();
             for (Vehicle currentVehicle : dealership.getInventory()) {
-                String vehicleEntry = convertVehicleToString(currentVehicle);
+                String vehicleEntry = currentVehicle.convertVehicleToString(currentVehicle);
                 System.out.println(vehicleEntry);
                 br.write(vehicleEntry);
                 br.newLine();
@@ -75,19 +75,19 @@ public class DealershipFileManager {
     };
 
     // vehicle info string for the first line
-    public String convertVehicleToString(Vehicle vehicle) {
-        String formattedEntry = "%d|%d|%s|%s|%s|%s|%d|%.2f";
-
-        return String.format(formattedEntry,
-                vehicle.getVin(),
-                vehicle.getYear(),
-                vehicle.getMake(),
-                vehicle.getModel(),
-                vehicle.getVehicleType(),
-                vehicle.getColor(),
-                vehicle.getOdometer(),
-                vehicle.getPrice()
-        );
-    };
+    //    public String convertVehicleToString(Vehicle vehicle) {
+    //        String formattedEntry = "%d|%d|%s|%s|%s|%s|%d|%.2f";
+    //
+    //        return String.format(formattedEntry,
+    //                vehicle.getVin(),
+    //                vehicle.getYear(),
+    //                vehicle.getMake(),
+    //                vehicle.getModel(),
+    //                vehicle.getVehicleType(),
+    //                vehicle.getColor(),
+    //                vehicle.getOdometer(),
+    //                vehicle.getPrice()
+    //        );
+    //    };
 
 }
