@@ -1,15 +1,14 @@
 package com.pluralsight;
 
 public class Vehicle {
-    // Vehicle will hold information about a specific vehicle
-
     // Variables
-    private int vin, year, odometer;
+    private int year, odometer;
+    private long vin;
     private String make, model, color, vehicleType;
     private double price;
 
-    // Constructor
-    public Vehicle(int vin, int year, int odometer, String make, String model, String color, String vehicleType, double price) {
+    // Constructors
+    public Vehicle(long vin, int year, int odometer, String make, String model, String color, String vehicleType, double price) {
         this.vin = vin;
         this.year = year;
         this.odometer = odometer;
@@ -20,12 +19,23 @@ public class Vehicle {
         this.price = price;
     }
 
+    public Vehicle () {
+        this.vin = 0;
+        this.year = 0;
+        this.odometer = 0;
+        this.make = "";
+        this.model = "";
+        this.color = "";
+        this.vehicleType = "";
+        this.price = 0;
+    }
+
     // Getters and Setters
-    public int getVin() {
+    public long getVin() {
         return vin;
     }
 
-    public void setVin(int vin) {
+    public void setVin(long vin) {
         this.vin = vin;
     }
 

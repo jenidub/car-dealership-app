@@ -1,12 +1,12 @@
 package com.pluralsight;
+import java.io.*;
 import java.util.*;
 
 
 public class Dealership {
-    // Dealership will hold information about the dealership (name, address, …)
-    //and maintain a list of vehicles. Since it has the list of vehicles, it will also
-    //have the methods that search the list for matching vehicles as well as
-    //add/remove vehicles.
+    // Declare a scanner for the class Dealership
+    private final Scanner scanner = new Scanner(System.in);
+    private final String FILE_NAME = "src/main/resources/inventory.csv";
 
     // Attributes
     private String name;
@@ -56,13 +56,40 @@ public class Dealership {
     }
 
     // Add a vehicle to the inventory
-    public static void addVehicle(Vehicle vehicle) {
+    public ArrayList<Vehicle> addVehicle() {
+        ArrayList<Vehicle> updatedInventory = getInventory();
+        Vehicle newEntry = new Vehicle();
 
+        //Get vehicle info from the user
+        System.out.println("What is the VIN NUMBER of the new vehicle?    ");
+        newEntry.setVin(Long.parseLong(scanner.nextLine()));
+        System.out.println("What is the YEAR of the new vehicle?    ");
+        newEntry.setYear(Integer.parseInt(scanner.nextLine()));
+        System.out.println("What is the MAKE of the new vehicle?    ");
+        newEntry.setMake(scanner.nextLine().trim());
+        System.out.println("What is the MODEL of the new vehicle?    ");
+        newEntry.setModel(scanner.nextLine().trim());
+        System.out.println("What is the TYPE of the new vehicle? [ car | truck | SUV | van ]   ");
+        newEntry.setVehicleType(scanner.nextLine().trim());
+        System.out.println("What is the COLOR of the new vehicle?   ");
+        newEntry.setColor(scanner.nextLine().trim());
+        System.out.println("What is the MILEAGE of the new vehicle? Please round to the nearest whole number  ");
+        newEntry.setOdometer(Integer.parseInt(scanner.nextLine()));
+        System.out.println("What is the PRICE of the new vehicle? Numbers only  ");
+        newEntry.setPrice(Double.parseDouble(scanner.nextLine()));
+        updatedInventory.add(newEntry);
+        return updatedInventory;
     }
 
     // Remove a vehicle from the inventory
-    public static void removeVehicle(Vehicle vehicle) {
-
+    public ArrayList<Vehicle> removeVehicle(Vehicle vehicleToRemove) {
+        ArrayList<Vehicle> updatedInventory = new ArrayList<Vehicle>();
+        for (Vehicle vehicle: inventory) {
+            if (vehicle.getVin() != vehicleToRemove.getVin()) {
+                updatedInventory.add(vehicle);
+            }
+        }
+        return updatedInventory;
     }
 
     // Get Vehicles by characteristics methods
@@ -72,7 +99,12 @@ public class Dealership {
         return matchingVehicles;
     }
 
-    public ArrayList<Vehicle> getVehiclesByPrice (double min, double max) {
+    public ArrayList<Vehicle> getVehiclesByPrice () {
+        System.out.println("Minimum price:    ");
+        double min = Double.parseDouble(scanner.nextLine());
+        System.out.println("Maximum price:    ");
+        double max = Double.parseDouble(scanner.nextLine());
+
         ArrayList<Vehicle> matchingVehicles = new ArrayList<Vehicle>();
         for (Vehicle vehicle: inventory) {
             double price = vehicle.getPrice();
@@ -83,7 +115,12 @@ public class Dealership {
         return matchingVehicles;
     };
 
-    public ArrayList<Vehicle> getVehiclesByMakeModel (String make, String model) {
+    public ArrayList<Vehicle> getVehiclesByMakeModel () {
+        System.out.println("Make of vehicle:    ");
+        String make = scanner.nextLine();
+        System.out.println("Model of vehicle:    ");
+        String model = scanner.nextLine();
+
         ArrayList<Vehicle> matchingVehicles = new ArrayList<Vehicle>();
         for (Vehicle vehicle: inventory) {
             String vehicleMake = vehicle.getMake();
@@ -95,7 +132,10 @@ public class Dealership {
         return matchingVehicles;
     };
 
-    public ArrayList<Vehicle> getVehiclesByYear (int year) {
+    public ArrayList<Vehicle> getVehiclesByYear () {
+        System.out.println("Year of vehicle:    ");
+        int year = Integer.parseInt(scanner.nextLine());
+
         ArrayList<Vehicle> matchingVehicles = new ArrayList<Vehicle>();
         for (Vehicle vehicle: inventory) {
             int vehicleYear = vehicle.getYear();
@@ -106,7 +146,10 @@ public class Dealership {
         return matchingVehicles;
     };
 
-    public ArrayList<Vehicle> getVehiclesByColor (String color) {
+    public ArrayList<Vehicle> getVehiclesByColor () {
+        System.out.println("Color of vehicle:    ");
+        String color = scanner.nextLine();
+
         ArrayList<Vehicle> matchingVehicles = new ArrayList<Vehicle>();
         for (Vehicle vehicle: inventory) {
             String vehicleColor = vehicle.getColor();
@@ -117,7 +160,10 @@ public class Dealership {
         return matchingVehicles;
     };
 
-    public ArrayList<Vehicle> getVehiclesByMileage (double mileage) {
+    public ArrayList<Vehicle> getVehiclesByMileage () {
+        System.out.println("Mileage of the vehicle:    ");
+        double mileage = Double.parseDouble(scanner.nextLine());
+
         ArrayList<Vehicle> matchingVehicles = new ArrayList<Vehicle>();
         for (Vehicle vehicle: inventory) {
             double vehicleMileage = vehicle.getOdometer();
@@ -128,7 +174,10 @@ public class Dealership {
         return matchingVehicles;
     };
 
-    public ArrayList<Vehicle> getVehiclesByType (String type) {
+    public ArrayList<Vehicle> getVehiclesByType () {
+        System.out.println("Vehicle Type: Select from the following options [ car | truck | SUV | van ]    ");
+        String type = scanner.nextLine();
+
         ArrayList<Vehicle> matchingVehicles = new ArrayList<Vehicle>();
         for (Vehicle vehicle: inventory) {
             String vehicleType = vehicle.getVehicleType();
@@ -137,5 +186,19 @@ public class Dealership {
             }
         }
         return matchingVehicles;
+    };
+
+    public String convertVehicleToString(Vehicle vehicle) {
+        String formattedEntry = "%1d | %2d | %3s | %4s | %5s | %6s | %7d | $%8.2f";
+        return String.format(formattedEntry,
+                    vehicle.getVin(),
+                    vehicle.getYear(),
+                    vehicle.getMake(),
+                    vehicle.getModel(),
+                    vehicle.getVehicleType(),
+                    vehicle.getColor(),
+                    vehicle.getOdometer(),
+                    vehicle.getPrice()
+        );
     };
 }

@@ -4,11 +4,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class UserInterface {
-    // all output to the screen, reading of
-    //user input, and "dispatching" of the commands to the Dealership as
-    //needed. (ex: when the user selects "List all Vehicles", UserInterface would
-    //call the appropriate Dealership method and then display the vehicles it
-    //returns.)
+    // Declare an instance of DealershipFileManager
     DealershipFileManager fileManager = new DealershipFileManager();
 
     //    the UserInterface will create the Dealership object when it is
@@ -18,6 +14,7 @@ public class UserInterface {
     public UserInterface() {
     }
 
+    // Display the home screen with all user options
     public void displayHomeScreen() {
         Dealership currentDealership = fileManager.getDealership();
         Scanner scanner = new Scanner(System.in);
@@ -37,31 +34,47 @@ public class UserInterface {
             // switch statement to run selected option
             switch (selection) {
                 case "1":
-                    System.out.println("dealership.getVehiclesByPrice() - params double min, max");
+                    displayVehicleList(currentDealership.getVehiclesByPrice());
                     break;
                 case "2":
-                    System.out.println("dealership.getVehiclesByMakeModel() - params String make or model");
+                    displayVehicleList(currentDealership.getVehiclesByMakeModel());
                     break;
                 case "3":
-                    System.out.println("dealership.getVehiclesByYear() - params int year");
+                    displayVehicleList(currentDealership.getVehiclesByYear());
                     break;
                 case "4":
-                    System.out.println("dealership.getVehiclesByColor() - params String color");
+                    displayVehicleList(currentDealership.getVehiclesByColor());
                     break;
                 case "5":
-                    System.out.println("dealership.getVehiclesByMileage() - params double mileage");
+                    displayVehicleList(currentDealership.getVehiclesByMileage());
                     break;
                 case "6":
-                    System.out.println("dealership.getVehiclesByType() - params String type");
+                    displayVehicleList(currentDealership.getVehiclesByType());
                     break;
                 case "7":
-                    System.out.println("dealership.getAllVehicles() - no params");
+                    displayVehicleList(currentDealership.getAllVehicles());
                     break;
                 case "8":
-                    System.out.println("dealership.addVehicle() - param Vehicle");
+                    System.out.println("\n*** Create a New Vehicle ***");
+                    ArrayList<Vehicle> updatedInventory = currentDealership.addVehicle();
+                    currentDealership.setInventory(updatedInventory);
+                    fileManager.saveDealership(currentDealership);
                     break;
                 case "9":
-                    System.out.println("dealership.removeVehicle() - param Vehicle");
+                    System.out.println("\n*** Remove a New Vehicle ***");
+                    System.out.println("Here is the current list of vehicles:");
+                    displayVehicleList(currentDealership.getAllVehicles());
+
+                    System.out.println("\nWhat is the VIN number of the card you want to remove?    ");
+                    long selectedVIN = Long.parseLong(scanner.nextLine());
+                    for (Vehicle vehicle : currentDealership.getInventory()) {
+                        if (vehicle.getVin() == selectedVIN) {
+                            updatedInventory = currentDealership.removeVehicle(vehicle);
+                            currentDealership.setInventory(updatedInventory);
+                        }
+                    }
+
+                    fileManager.saveDealership(currentDealership);
                     break;
                 case "99":
                     System.out.println("Thank you for using our program. Goodbye!");
@@ -72,27 +85,51 @@ public class UserInterface {
                     break;
             }
         }
-
     }
 
+    // Display the welcome screen when the user first opens the app
     public void displayWelcome() {
-        // TBD: Create Welcome Message Graphic
-        System.out.println("Welcome to the JeniDub Dealership Management System!");
+        System.out.println(
+                " _____ _            ____             _               _     _            _                \n" +
+                "|_   _| |__   ___  |  _ \\  ___  __ _| | ___ _ __ ___| |__ (_)_ __      / \\   _ __  _ __  \n" +
+                "  | | | '_ \\ / _ \\ | | | |/ _ \\/ _` | |/ _ \\ '__/ __| '_ \\| | '_ \\    / _ \\ | '_ \\| '_ \\ \n" +
+                "  | | | | | |  __/ | |_| |  __/ (_| | |  __/ |  \\__ \\ | | | | |_) |  / ___ \\| |_) | |_) |\n" +
+                "  |_| |_| |_|\\___| |____/ \\___|\\__,_|_|\\___|_|  |___/_| |_|_| .__/  /_/   \\_\\ .__/| .__/ \n" +
+                "                                                            |_|             |_|   |_|     "
+        );
+
+        System.out.println("Good morning {employee name}! Let's Get to Work!\n".toUpperCase());
     }
 
     public void displayOptionMenu() {
-        System.out.println("Home Menu");
-        System.out.println("Please select one of the following options using the number");
-        System.out.println("1 - Find vehicles within a price range");
-        System.out.println("2 - Find vehicles by make / model");
-        System.out.println("3 - Find vehicles by year range");
-        System.out.println("4 - Find vehicles by color");
-        System.out.println("5 - Find vehicles by mileage range");
-        System.out.println("6 - Find vehicles by type (car, truck, SUV, van)");
-        System.out.println("7 - List ALL vehicles");
-        System.out.println("8 - Add a vehicle");
-        System.out.println("9 - Remove a vehicle");
-        System.out.println("99 - Quit");
+        System.out.println("Home Menu".toUpperCase());
+        System.out.println("******************");
+        System.out.println("Please select one of the following options using the associated number");
+        System.out.println("[1] Find vehicles within a price range");
+        System.out.println("[2] Find vehicles by make / model");
+        System.out.println("[3] Find vehicles by year range");
+        System.out.println("[4] Find vehicles by color");
+        System.out.println("[5] Find vehicles by mileage range");
+        System.out.println("[6] Find vehicles by type (car, truck, SUV, van)");
+        System.out.println("[7] List all vehicles in the inventory");
+        System.out.println("[8] Add a vehicle");
+        System.out.println("[9] Remove a vehicle");
+        System.out.println("[99] Quit");
+    }
+
+    public void displayVehicleList(ArrayList<Vehicle> matchingVehicles) {
+        String formattedEntry = "%d | %d | %s | %s | %s | %s | %d | $%.2f";
+        for (Vehicle vehicle : matchingVehicles) {
+            System.out.printf((formattedEntry) + "%n",
+                    vehicle.getVin(),
+                    vehicle.getYear(),
+                    vehicle.getMake(),
+                    vehicle.getModel(),
+                    vehicle.getVehicleType(),
+                    vehicle.getColor(),
+                    vehicle.getOdometer(),
+                    vehicle.getPrice());
+        }
     }
 
 }
