@@ -73,7 +73,7 @@ public class UserInterface {
 
                     System.out.println("\nWhat is the VIN number of the card you want to remove?    ");
                     selectedVIN = Long.parseLong(scanner.nextLine());
-                    matchedVehicle = findVINMatch(currentDealership.getInventory(), selectedVIN, scanner);
+                    matchedVehicle = findVINMatch(currentDealership.getInventory(), selectedVIN);
                     if (matchedVehicle != null) {
                         updatedInventory = currentDealership.removeVehicle(matchedVehicle);
                         currentDealership.setInventory(updatedInventory);
@@ -85,7 +85,7 @@ public class UserInterface {
                     System.out.println("\n*********** Sell / Lease a Vehicle ***********");
                     System.out.println("\nWhat is the VIN number of the car?    ");
                     selectedVIN = Long.parseLong(scanner.nextLine());
-                    matchedVehicle = findVINMatch(currentDealership.getInventory(), selectedVIN, scanner);
+                    matchedVehicle = findVINMatch(currentDealership.getInventory(), selectedVIN);
                     if (matchedVehicle != null) {
                         // confirm match and prompt for sale or contract
                         System.out.printf("\n*** Vehicle with VIN %s found in the inventory and is available for sale/lease! ***10\n", matchedVehicle.getVin());
@@ -174,12 +174,20 @@ public class UserInterface {
         }
     }
 
-    public Vehicle findVINMatch(ArrayList<Vehicle> dealershipInventory, long selectedVIN, Scanner scanner) {
+    // Helper method findVINMatch - iterate through the inventory to see if there is a VIN match
+    // Parameters needed: the inventory, user selected VIN number
+    // returns Vehicle - if match found, return the Vehicle, if no match is found, return null
+    public Vehicle findVINMatch(ArrayList<Vehicle> dealershipInventory, long selectedVIN) {
+        // iterate through dealershipInventory using an enhanced for loop
         for (Vehicle vehicle : dealershipInventory) {
+            // check IF the current vehicle [ vehicle.getVin() ] in the for loop matches the selectedVIN
+            // if they match, return the vehicle and close method
             if (vehicle.getVin() == selectedVIN) {
                 return vehicle;
             }
         }
+        // if the inventory is searched and no vehicle is returned, that means there is no match
+        // return null to indicate no match to the running code
         return null;
     }
 
