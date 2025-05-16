@@ -20,6 +20,10 @@ public class ContractFileManager {
             br.write(newEntry);
             br.newLine();
 
+            System.out.println("\n**********   SUCCESS   **********\n");
+            System.out.printf("The contract for VIN #%d has been added to the database successfully!\n", newContract.getVehicle().getVin());
+            System.out.println("\n*********************************\n\n");
+
         } catch (IOException error) {
             error.getLocalizedMessage();
         }

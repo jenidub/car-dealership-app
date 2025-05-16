@@ -61,14 +61,14 @@ public class UserInterface {
                     displayVehicleList(currentDealership.getAllVehicles());
                     break;
                 case "8":
-                    System.out.println("\n*** Create a New Vehicle ***");
+                    System.out.println("\n*********** Add a New Vehicle ***********");
                     updatedInventory = currentDealership.addVehicle();
                     currentDealership.setInventory(updatedInventory);
                     fileManager.saveDealership(currentDealership);
                     break;
                 case "9":
-                    System.out.println("\n*** Remove a New Vehicle ***");
-                    System.out.println("Here is the current list of vehicles:");
+                    System.out.println("\n*********** Remove an Existing Vehicle ***********");
+                    System.out.println("Here is the current list of vehicles in the inventory:");
                     displayVehicleList(currentDealership.getAllVehicles());
 
                     System.out.println("\nWhat is the VIN number of the card you want to remove?    ");
@@ -82,14 +82,16 @@ public class UserInterface {
                     fileManager.saveDealership(currentDealership);
                     break;
                 case "10":
-                    // sale/lease a vehicle
+                    System.out.println("\n*********** Sell / Lease a Vehicle ***********");
                     System.out.println("\nWhat is the VIN number of the car?    ");
                     selectedVIN = Long.parseLong(scanner.nextLine());
                     matchedVehicle = findVINMatch(currentDealership.getInventory(), selectedVIN, scanner);
                     if (matchedVehicle != null) {
-                        // prompt for sale or contract
-                        System.out.println("Vehicle found! Is this a sale or a lease contract?    ");
+                        // confirm match and prompt for sale or contract
+                        System.out.printf("\n*** Vehicle with VIN %s found in the inventory and is available for sale/lease! ***10\n", matchedVehicle.getVin());
+                        System.out.println("Will this be a sale or a lease contract?");
                         String contractType = scanner.nextLine();
+
                         // activate the matching class
                         switch(contractType.toLowerCase()) {
                             case "sale":

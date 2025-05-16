@@ -60,6 +60,12 @@ public class DealershipFileManager {
                 br.write(vehicleEntry);
                 br.newLine();
             }
+
+            System.out.println("\n**********   SUCCESS   **********\n");
+            System.out.printf("The inventory file for dealership %s has been updated successfully!\n", dealership.getName());
+            System.out.println("Returning to the Home Menu ........... ");
+            System.out.println("\n*********************************\n\n");
+
         } catch (IOException error) {
             error.getLocalizedMessage();
         }
