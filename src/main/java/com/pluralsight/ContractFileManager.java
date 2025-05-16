@@ -4,35 +4,29 @@ import java.io.*;
 import java.util.ArrayList;
 
 public class ContractFileManager {
-    // save file path for contracts.csv as final variable
-    private final String CONTRACT_FILE = "src/main/resources/contracts.csv";
-
-    // Constructor
-    public ContractFileManager() {
-    }
-
     // saveContract() method - add entry to contract file
     public void saveContract(Contract newContract) {
+        // save file path for contracts.csv as final variable
+        final String CONTRACT_FILE = "src/main/resources/contracts.csv";
+
         try (FileWriter fileWriter = new FileWriter(CONTRACT_FILE, true);
              BufferedWriter br = new BufferedWriter(fileWriter)){
-            String salesEntry = null;
-            String leaseEntry = null;
+            String newEntry;
 
-            if (newContract instanceof SalesContract) {
-                salesEntry = createSalesEntry((SalesContract) newContract);
-                br.write(salesEntry);
-                br.newLine();
-            } else {
-                System.out.println("This is a lease transaction");
-            }
+            newEntry = newContract instanceof SalesContract ?
+                    createSalesEntry((SalesContract) newContract)
+                    : createLeaseEntry((LeaseContract) newContract);
+
+            br.write(newEntry);
+            br.newLine();
 
         } catch (IOException error) {
             error.getLocalizedMessage();
         }
     }
 
+    // create a sales entry from the contract information
     public String createSalesEntry(SalesContract contract) {
-        // init StringBuilder for a sales entry to the contract file
         //        SALE|20210928|Dana Wyatt|dana@texas.com| => from method
         //        10112|1993|Ford|Explorer|SUV|Red|525123|995.00| => from existing method (vehicle info)
         //        49.75|100.00|295.00|1439.75|NO|0.00 => from SalesContract class
@@ -50,4 +44,21 @@ public class ContractFileManager {
                 financedStatus + "|" +
                 String.format("$%.2f", contract.getMonthlyPayment());
     }
+
+    // create a lease entry from the contract information
+    public String createLeaseEntry(LeaseContract contract) {
+        // LEASE|20210928|Zachary Westly|zach@texas.com|37846|2021|
+        //  Chevrolet|Silverado|truck|Black|2750|31995.00|
+        //  15997.50|2239.65|18337.15|541.39
+
+        return "LEASE|" + contract.date + "|" +
+                contract.customerName + "|" +
+                contract.customerEmail + "|" +
+                contract.vehicle.convertVehicleToString(contract.vehicle) + "|" +
+                String.format("$%.2f", contract.getEndingValue()) + "|" +
+                String.format("$%.2f",contract.getLeaseFee()) + "|" +
+                String.format("$%.2f",contract.getTotalPrice()) + "|" +
+                String.format("$%.2f", contract.getMonthlyPayment());
+    }
+
 }

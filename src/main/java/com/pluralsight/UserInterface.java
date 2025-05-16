@@ -14,9 +14,6 @@ public class UserInterface {
     //    created. Down the road, there will be a user option to "switch dealerships".
     ArrayList<Dealership> dealershipList = new ArrayList<Dealership>();
 
-    public UserInterface() {
-    }
-
     // Display the home screen with all user options
     public void displayHomeScreen() {
         // Class instantiation declarations
@@ -102,11 +99,18 @@ public class UserInterface {
                                 break;
                             case "lease":
                                 //get lease info
+                                LeaseContract newLeaseContract = addLeaseTransaction(matchedVehicle, scanner);
+                                contractFileManager.saveContract(newLeaseContract);
                                 break;
                             default:
                                 System.out.println("Invalid selection - please enter again");
                                 break;
                         }
+
+                        //remove vehicle after sale or lease is completed
+                        updatedInventory = currentDealership.removeVehicle(matchedVehicle);
+                        currentDealership.setInventory(updatedInventory);
+                        fileManager.saveDealership(currentDealership);
                     } else {
                         System.out.println("There is no matching VIN. Please try again.");
                     }
@@ -210,6 +214,47 @@ public class UserInterface {
         newSalesContract.setIsFinanced(financeSelection.equalsIgnoreCase("yes"));
 
         return newSalesContract;
+    }
+
+    public LeaseContract addLeaseTransaction (Vehicle vehicleInfo, Scanner scanner) {
+        // instantiate SalesContract class
+        LeaseContract newLeaseContract = new LeaseContract(
+                "",
+                "",
+                "",
+                vehicleInfo,
+                0,
+                0,
+                0,
+                0
+        );
+
+        // get today's date formatted per requirements yyyyMMdd
+        LocalDate date = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        String formattedDate = date.format(formatter);
+        newLeaseContract.setDate(formattedDate);
+
+        // get customer's name
+        System.out.println("What is the customer's name?");
+        String customerName = scanner.nextLine();
+        newLeaseContract.setCustomerName(customerName);
+
+        // get customer's email
+        System.out.println("What is the customer's email?");
+        String customerEmail = scanner.nextLine();
+        newLeaseContract.setCustomerEmail(customerEmail);
+
+        // calculate the ending value
+        newLeaseContract.endingValue = newLeaseContract.getEndingValue();
+
+        // calculate the total price
+        newLeaseContract.totalPrice = newLeaseContract.getTotalPrice();
+
+        // calculate the monthly payment
+        newLeaseContract.monthlyPayment = newLeaseContract.getMonthlyPayment();
+
+        return newLeaseContract;
     }
 
 }

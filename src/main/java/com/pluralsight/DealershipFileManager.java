@@ -8,9 +8,9 @@ public class DealershipFileManager {
     private final ArrayList<Vehicle> inventory = new ArrayList<Vehicle>();
     private final String DEALERSHIP_FILE = "src/main/resources/inventory.csv";
 
-    // Constructor
-    public DealershipFileManager() {
-    }
+//    // Constructor
+//    public DealershipFileManager() {
+//    }
 
     // getDealership() method - converts the info in csv file and converts it into a Dealership class
     public Dealership getDealership() {
@@ -51,14 +51,12 @@ public class DealershipFileManager {
 
     // saveDealership() method - saves changes to the inventory and rewrites the inventory.csv file
     public void saveDealership(Dealership dealership) {
-//        String tempFile = "src/main/resources/temp_inventory.csv";
         try (BufferedWriter br = new BufferedWriter(new FileWriter(DEALERSHIP_FILE))) {
             String firstLine = convertDealerInfoToString(dealership.getName(), dealership.getAddress(), dealership.getPhone());
             br.write(firstLine);
             br.newLine();
             for (Vehicle currentVehicle : dealership.getInventory()) {
                 String vehicleEntry = currentVehicle.convertVehicleToString(currentVehicle);
-                System.out.println(vehicleEntry);
                 br.write(vehicleEntry);
                 br.newLine();
             }
@@ -73,21 +71,5 @@ public class DealershipFileManager {
         String formattedEntry = "%1s|%2s|%3s";
         return String.format(formattedEntry, dealerName, dealerAddress, dealerPhone);
     };
-
-    // vehicle info string for the first line
-    //    public String convertVehicleToString(Vehicle vehicle) {
-    //        String formattedEntry = "%d|%d|%s|%s|%s|%s|%d|%.2f";
-    //
-    //        return String.format(formattedEntry,
-    //                vehicle.getVin(),
-    //                vehicle.getYear(),
-    //                vehicle.getMake(),
-    //                vehicle.getModel(),
-    //                vehicle.getVehicleType(),
-    //                vehicle.getColor(),
-    //                vehicle.getOdometer(),
-    //                vehicle.getPrice()
-    //        );
-    //    };
 
 }

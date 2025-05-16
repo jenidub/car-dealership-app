@@ -64,13 +64,11 @@ public class SalesContract extends Contract {
         if (isFinanced && vehicle.getPrice() >= 10000) {
             // 4.25% rate , 48 months term
             setMonthlyPayment(getTotalPrice() * FINANCE_RATE_OVER_10K / FINANCE_TERM_OVER_10K);
-            System.out.println("monthly payment over $10K:   $" + monthlyPayment);
         }
         // financed and price < 10K
         else if (isFinanced && vehicle.getPrice() < 10000) {
             // 5.25% rate , 24 months term
             setMonthlyPayment(getTotalPrice() * FINANCE_RATE_UNDER_10K / FINANCE_TERM_UNDER_10K);
-            System.out.println("monthly payment under $10K:   $" + monthlyPayment);
         }
         // not financed - paid in full - payment is 0
         else {
